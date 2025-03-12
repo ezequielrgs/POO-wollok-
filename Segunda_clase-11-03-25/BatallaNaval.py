@@ -19,24 +19,21 @@ def colocar_objeto(c:int,grilla:list, coord:list )->list:
 
     for _ in range (0, c):
         try:
-            if verif(grid= grilla, obj_coords=(x,y)):
+            if verif_celdas(grid= grilla, obj_coords=(x,y)):
                 new_grid[y][x]=1 
             return new_grid
         except:
             raise "Error"
 
-def verif_celdas(obj_coords:tuple, grid: list) -> bool:
-    is_valid = True
+def verif_celdas(obj_coords:tuple, grid: list, is_valid = True) -> bool:
+    #print("A estas coordenadas llega nuestro objeto:{}\n".format(obj_coords))
+   # is_valid = True
     for y in range(obj_coords[1]-1,obj_coords[1]+1):
         for x in range(obj_coords[0]-1, obj_coords[0]+1):
-            current_coord = grid[y][x] 
-            #
-            # **Current_coord consulta elementos de la grilla, pero, ¿Cómo sabe currnt_coord que elemento consultar?
-            # ***Simple, no lo sabe.<-Ah, pero sos chistoso. <-pues no
-            # ***
-            # #
-            is_valid = celda_vacia(current_coord=current_coord)
-        if not is_valid : break
+            current_coord = grid[y][x]
+            print("La pieza actual es:", current_coord, "Y ésto sale en verif:", grid[y][x], "en las coordenadas: {}".format((x,y)) )
+            is_valid = celda_vacia(current_coord=current_coord, is_valid=is_valid)
+        #if not is_valid : break
     
     return is_valid
     
@@ -49,17 +46,19 @@ def cantidad_objetos(c=1)->int:
     # para asegurarnos de la funcionalidad del código, en un futuro cuando el codigo esté
     # bien optimizado y debuggeado intentar que la cantidad sea al azar... #
     return c
-def celda_vacia(current_coord:int)->bool:
+def celda_vacia(is_valid:bool,current_coord:int)->bool:
     #
     # if (bordes == 1)=> false
     #
     # array. #
-    is_valid=True
+    
+   
     if (current_coord != 0 and current_coord!=None):
         is_valid = False
+
     return is_valid
 
-    pass
+    
 def graficar(grilla:list)->None:
     #
     # **Grilla == [[0,0,0,0,0,0,0,0],
@@ -85,10 +84,17 @@ def main():
     print("La grilla original es:\n\t{}".format(graficar))
     from random import randint
     while True:
-        coord_of_object = (randint(0, 10), randint(0,10))
-        colocar_objeto(c=randint(0,3), grilla=grid, coord=coord_of_object) if verif_celdas(obj_coords=coord_of_object, grid=grid) else print(-1)
-        graficar(grid)
-        usr_want_to_break=input("Do you want to break the program? <Yes/no> \n\t")
-        if usr_want_to_break.upper() == "YES":
-            break
+        coords_of_object = (randint(0, len(grid)), randint(0,len(grid[0])))
+        try:
+            #colocar_objeto(c=randint(0,3), grilla=grid, coord=coord_of_object) if verif_celdas(obj_coords=coord_of_object, grid=grid) else print(-1)
+            if(verif_celdas(coords_of_object, grid)):
+                colocar_objeto(c=cantidad_objetos(), grilla=grid, coord=coords_of_object)
+            else:
+                raise "No se puede colocar"
+            graficar(grid)
+            usr_want_to_break=input("Do you want to break the program? <Yes/no> \n\t")
+            if usr_want_to_break.upper() == "YES":
+                break
+        except IndexError:
+            continue
 main()
