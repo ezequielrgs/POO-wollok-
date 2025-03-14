@@ -12,7 +12,7 @@ def grilla(dimensiones:tuple)->list:
     return future_grid
         
     # return [[0 for _ in range(0, dimensiones[0])] for _ in range(0, dimensiones[1])] <-- Revisar la sintaxis
-def colocar_objeto(c:int,grilla:list, coord:list )->list:
+def colocar_objeto(grilla:list, coord:list, c=1)->list:
     new_grid = grilla[:]
     x = coord[0]
     y = coord[1]
@@ -28,13 +28,21 @@ def colocar_objeto(c:int,grilla:list, coord:list )->list:
 def verif_celdas(obj_coords:tuple, grid: list, is_valid = True) -> bool:
     #print("A estas coordenadas llega nuestro objeto:{}\n".format(obj_coords))
    # is_valid = True
+    cont=0 #Contdor que se utilizará por si salta un 1 en el centro
     for y in range(obj_coords[1]-1,obj_coords[1]+1):
         for x in range(obj_coords[0]-1, obj_coords[0]+1):
             current_coord = grid[y][x]
             print("La pieza actual es:", current_coord, "Y ésto sale en verif:", grid[y][x], "en las coordenadas: {}".format((x,y)) )
-            is_valid = celda_vacia(current_coord=current_coord, is_valid=is_valid)
-        #if not is_valid : break
-    
+            
+            validar = celda_vacia(current_coord=current_coord, is_valid=is_valid)
+            is_valid = validar[0]
+            if is_valid is False:
+                print("Se ingresó al contador.")
+                cont+=1
+            elif cont>1:
+                return is_valid
+            
+    print("Esto va a devolver verif:", is_valid)
     return is_valid
     
     
@@ -52,11 +60,12 @@ def celda_vacia(is_valid:bool,current_coord:int)->bool:
     #
     # array. #
     
-   
-    if (current_coord != 0 and current_coord!=None):
+    
+    if (current_coord != 0 and current_coord!=None or current_coord == 2):
         is_valid = False
-
-    return is_valid
+    current_coord = 2
+    
+    return is_valid, current_coord
 
     
 def graficar(grilla:list)->None:
@@ -78,23 +87,34 @@ def graficar(grilla:list)->None:
 
 
 
+def generar_coords(grid):
+    from random import randint
+    coords_of_object = (randint(0,len(grid[0])-1),randint(0, len(grid)-1))
+    return coords_of_object
+    
+def vlid_coord(coords:tuple, grid:list)->bool:
+    print(coords)
+    if coords[0] < 0 or coords[0] >= len(grid[0]):
+        return False
+    if coords[1] < 0 or coords[1] >= len(grid):
+        return False
+    print("Las cordenadas {} son validas".format(coords))
+    return True
+    
+    pass
+def proc(coords, grid):
+    
+    graficar(grid)
+    
+    if verif_celdas(coords, grid) and vlid_coord(coords, grid):
+        colocar_objeto(grid, coords)
 
 def main():
-    grid = grilla((10, 10))
-    print("La grilla original es:\n\t{}".format(graficar))
-    from random import randint
-    while True:
-        coords_of_object = (randint(0, len(grid)), randint(0,len(grid[0])))
-        try:
-            #colocar_objeto(c=randint(0,3), grilla=grid, coord=coord_of_object) if verif_celdas(obj_coords=coord_of_object, grid=grid) else print(-1)
-            if(verif_celdas(coords_of_object, grid)):
-                colocar_objeto(c=cantidad_objetos(), grilla=grid, coord=coords_of_object)
-            else:
-                raise "No se puede colocar"
-            graficar(grid)
-            usr_want_to_break=input("Do you want to break the program? <Yes/no> \n\t")
-            if usr_want_to_break.upper() == "YES":
-                break
-        except IndexError:
-            continue
+    cantidad = cantidad_objetos(c=int(input("Cuantos objetos quire ingresar:")))
+    
+    for _ in range(cantidad):
+        grid = grilla(dimensiones=dimensiones(int(input("X = ")), int(input("Y = "))))
+        coords=generar_coords(grid)
+        proc()
+        #print("\nY verificar celdas devuelve:",verif_celdas(coords, grid))
 main()
