@@ -23,13 +23,13 @@ def colocar_objeto(grilla: list, coord: list, c=1) -> list:
 def verif_celdas(obj_coords: tuple, grid: list, is_valid=True) -> bool:
     lenx = len(grid[0])
     leny = len(grid)
-    ly = max(obj_coords[0] - 1, 0)
-    lx = max(obj_coords[1] - 1, 0)
-    by = min(obj_coords[0] + 1, leny)
-    bx = min(obj_coords[1] + 1, lenx)
+    LimiteSup = max(obj_coords[0] - 1, 0)
+    LimiteIzq = max(obj_coords[1] - 1, 0)
+    LimiteInf = min(obj_coords[0] + 1, leny) #Obtengo el límite inferior procurando que no se tomen coordenadas invalidas
+    LimiteDer = min(obj_coords[1] + 1, lenx) # Obtenemos el límite derecho procurando que no se tomen coords invalidas.
     is_valid = True
-    for y in range(ly, min(leny, by+1)):
-        for x in range(lx, min(lenx, bx+1)):
+    for y in range(LimiteSup, min(leny, LimiteInf+1)):
+        for x in range(LimiteIzq, min(lenx, LimiteDer+1)):
             current_coord = grid[y][x]
             is_valid = celda_vacia(current_coord)
             if is_valid==False:
@@ -79,12 +79,12 @@ def intelligence(coords:tuple, grid:list, UsedCoords = [])->list:
         UsedCoords.append(coords)
         return disparo(coord_apuntada=coords, grid=grid)
     #En caso de si haber una coordenada, se investigará hacia que otras coordenadas se podría disparar
-    new_grid = grid[:]#Creamos una copia de la grilla
-    if coords in UsedCoords: #Si las coordenadas actuales ya fueron consultadas
-        
-        pass
+    new_grid = grid[:]#Creamos una copia de la grilla por las dudas
+    if not coords in UsedCoords: # Si las coordenadas actuales ya fueron consultadas
+        return disparo(coord_apuntada=coords, grid=new_grid) # En caso de tratarse de coordenadas no utilizadas anteriormente efectuamos el disparo.
+
     
-    disparo()
+    
     return new_grid, UsedCoords
     
 
@@ -101,6 +101,7 @@ def main() -> None:
         grid = proc(coords, grid)
         
     graficar(grid)
+    intelligence(coords=coords, grid= grid)
 
 
 main()
