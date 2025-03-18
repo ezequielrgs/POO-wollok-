@@ -73,13 +73,13 @@ def proc(coords: tuple, grid: list) -> None:
 
 
 def Boat_downed(cell:list)->list:
-    cell = 0
+    cell = 2
     return cell
 
 def are_cell_empty(aim)->bool:
-    if aim == 0:
+    if aim == 1:
         return True
-    elif aim != 0: 
+    elif aim != 1: 
         return False
 
 def disparo(coord_apuntada:tuple, grid:list)->list:
@@ -94,12 +94,13 @@ def disparo(coord_apuntada:tuple, grid:list)->list:
     print("Estas son las coordenadas recibidas: \t{}\n".format(coord_apuntada))
     x,y,= coord_apuntada[1], coord_apuntada[0] 
     aiming = grid[y][x]
-    print("Esto vale MyBool:\t{}\n".format(aiming is True))
-    not_water = are_cell_empty(aiming)
-    if not_water:
+   # print("Esto vale MyBool:\t{}\n".format(aiming == 1))
+    is_a_boat = are_cell_empty(aiming)
+    if is_a_boat:
        # print("Así está la asignacion:\t{}\n".format(Boat_downed(shoot=aiming)))
-        grid[y][x] = Boat_downed(shoot=aiming)
-        return [grid]
+        grid[y][x] = Boat_downed(aiming)
+        return [grid, is_a_boat]
+    return [grid, is_a_boat]
     
     #MyBool if return Boat_downed(shoot=aiming) else 
 
@@ -108,16 +109,29 @@ def intelligence(coords:tuple, grid:list, UsedCoords = [])->list:
     if not UsedCoords: #Si UsedCoords no tiene coordenadas guardadas, el programa disparará automaticamente
         UsedCoords.append(coords)
         return disparo(coord_apuntada=coords, grid=grid)
+    if disparo(coord_apuntada=coords, grid=grid)[1]:
+        print("El barcho debió hundirse")
+        grid[coords[1]][coords[0]] = 2
+        return grid
+    print("Se ha disparado a las coordenadas incorrectas")
     #En caso de si haber una coordenada, se investigará hacia que otras coordenadas se podría disparar
+    
     new_grid = grid[:]#Creamos una copia de la grilla por las dudas
+    
     if not coords in UsedCoords: # Si las coordenadas actuales ya fueron consultadas
-        return disparo(coord_apuntada=coords, grid=new_grid) # En caso de tratarse de coordenadas no utilizadas anteriormente efectuamos el disparo.
+        UsedCoords.append(coords)
+        shoot = disparo(coord_apuntada=coords, grid=new_grid) # En caso de tratarse de coordenadas no utilizadas anteriormente efectuamos el disparo.
+        if shoot[1] is True:
+            return [new_grid, True]
     elif coords in UsedCoords:
-        return intelligence(new_grid, UsedCoords.append(coords))
+        
+        #return intelligence(new_grid, UsedCoords.append(coords))
+        pass
     else:
         raise "Error"
 
 def main() -> None:
+    from random import randint
     objs = input("Cuantos objetos quiere ingresar: ") 
     cantidad = cantidad_objetos(c=int(objs))
     ix = input("X = ")
@@ -130,8 +144,21 @@ def main() -> None:
         grid = proc(coords, grid)
         
     graficar(grid)
-    #while True:
-    print(intelligence(coords=coords, grid= grid))
+    for _ in range(0,3):
+        coord_apuntada = (randint(0, len(grid)-1), randint(0, len(grid[0])-1)) 
+        IA = intelligence(coords=coord_apuntada, grid= grid)  #Esto debe devolver la actualizacion de la grilla con el disparo efectuado y un valor booleano que determine el undiemiento de algún barco.
 
+
+    """
+    while True:
+        coord_apuntada = (randint(0, len(grid)), randint(0, len(grid[0]))) 
+        IA = intelligence(coords=coord_apuntada, grid= grid) #Esto debe devolver la actualizacion de la grilla con el disparo efectuado y un valor booleano que determine el undiemiento de algún barco.
+
+        print(IA[0])
+
+        if IA[1]: # Este condicional debería evaluar si se hundió o no un barco.
+
+            break
+    """
 
 main()
