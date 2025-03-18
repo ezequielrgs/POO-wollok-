@@ -70,9 +70,22 @@ def proc(coords: tuple, grid: list) -> None:
     else:
         #print("posicion invalida ", coords)
         return grid
-def disparo(coord_apuntada:tuple, grid:list)->list:
 
-    pass
+
+def Boat_downed(shoot:list)->list:
+    shoot[0] = 0
+    return shoot
+
+
+def disparo(coord_apuntada:tuple, grid:list)->list:
+    bool_and_aiming = [grid[coord_apuntada[0]][coord_apuntada[1]],grid[coord_apuntada[0]][coord_apuntada[1]] == 1]
+    if bool_and_aiming[1]:
+        bool_and_aiming[0] = Boat_downed(shoot=bool_and_aiming) 
+        print("Se está retornando esto en Bool_and_aiming{}".format(bool_and_aiming))
+        return bool_and_aiming
+    else:
+        None
+    
 def intelligence(coords:tuple, grid:list, UsedCoords = [])->list:
    # UsedCoords = []
     if not UsedCoords: #Si UsedCoords no tiene coordenadas guardadas, el programa disparará automaticamente
@@ -82,14 +95,13 @@ def intelligence(coords:tuple, grid:list, UsedCoords = [])->list:
     new_grid = grid[:]#Creamos una copia de la grilla por las dudas
     if not coords in UsedCoords: # Si las coordenadas actuales ya fueron consultadas
         return disparo(coord_apuntada=coords, grid=new_grid) # En caso de tratarse de coordenadas no utilizadas anteriormente efectuamos el disparo.
-
-    
-    
-    return new_grid, UsedCoords
-    
+    elif coords in UsedCoords:
+        return intelligence(new_grid, UsedCoords.append(coords))
+    else:
+        raise "Error"
 
 def main() -> None:
-    objs = input("Cuantos objetos quiere ingresar: ")
+    objs = input("Cuantos objetos quiere ingresar: ") 
     cantidad = cantidad_objetos(c=int(objs))
     ix = input("X = ")
     iy = input("Y = ")
@@ -101,7 +113,7 @@ def main() -> None:
         grid = proc(coords, grid)
         
     graficar(grid)
-    intelligence(coords=coords, grid= grid)
+    print(intelligence(coords=coords, grid= grid))
 
 
 main()
