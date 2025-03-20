@@ -5,6 +5,7 @@ def dimensiones(x: int, y: int) -> tuple:
 def grilla(dimensiones: tuple) -> list:
     return [[0 for _ in range(dimensiones[0])] for _ in range(dimensiones[1])]
 
+
 def colocar_objeto(grilla: list, coord: list, c=1) -> list:
     new_grid = [fila[:] for fila in grilla]
     y, x = coord[0], coord[1]
@@ -17,6 +18,7 @@ def colocar_objeto(grilla: list, coord: list, c=1) -> list:
             return new_grid
         except:
             raise "Error"
+
 
 def verif_celdas(obj_coords: tuple, grid: list, is_valid=True) -> bool:
     lenx = len(grid[0])
@@ -46,62 +48,49 @@ def cantidad_objetos(c=1) -> int:
 
 
 def celda_vacia(current_coord: int):
-    if current_coord != 0:
-        return False
-    return True
+    return current_coord == 0
 
 
 def graficar(grilla: list) -> None:
     for fila in grilla:
         print(fila, "\n")
 
-
-def generar_coords(grid: list) -> tuple:
-    from random import randint
-    return (randint(0, len(grid[0]) - 1), (randint(0, len(grid) - 1)))
-
-
-def put_in_grill_process(coords: tuple, grid: list) -> list:
+def proc(coords: tuple, grid: list) -> None:
     if verif_celdas(coords, grid):
         return colocar_objeto(grid, coords)
     else:
-        return grid    
+        return grid
 
-def are_cell_empty(aim:int)->bool:
+def are_cell_empty(aim)->bool:
         return aim == 1
 
 def disparo(coord_apuntada:tuple, grid:list)->list:
+    print("Estas son las coordenadas recibidas: \t{}\n".format(coord_apuntada))
     x,y,= coord_apuntada[1], coord_apuntada[0] 
     aiming = grid[y][x]
+   # print("Esto vale MyBool:\t{}\n".format(aiming == 1))
     is_a_boat = are_cell_empty(aiming)
+    
 
     if is_a_boat:
-        # 
-        # **is_a_boat refiere a una variable del tipo booleano que indica
-        # **al resto del programa si se ha acertado el disparo(si le pegó a un barco)
-        # #
+       # print("Así está la asignacion:\t{}\n".format(Boat_downed(shoot=aiming)))
         grid[y][x] = 2
-        return [grid, is_a_boat] #Este 'return' indica que se ACERTÓ el dísparo.(True)
-    return [grid, is_a_boat] #Este otro 'return' indica que NO se acertó.(False)
+        return [grid, is_a_boat]
+    return [grid, is_a_boat]
 
 
 def intelligence(coords:tuple, grid:list, UsedCoords = [])->list:
-    if not UsedCoords: 
-        #
-        # **Si UsedCoords no tiene coordenadas guardadas, 
-        # **el programa disparará automaticamente
-        # #
+   # UsedCoords = []
+    if not UsedCoords: #Si UsedCoords no tiene coordenadas guardadas, el programa disparará automaticamente
         UsedCoords.append(coords)
         return disparo(coord_apuntada=coords, grid=grid)
     
     if disparo(coord_apuntada=coords, grid=grid)[1]:
-        #
-        # El barco tiene qe hundirse.#
+        print("El barco debió hundirse")
         grid[coords[1]][coords[0]] = 2
         return grid
-
-    #
-    # El barco no debe hundirse.#    
+    print("Se ha disparado a las coordenadas incorrectas")
+    
     new_grid = grid[:]
     
     if not coords in UsedCoords:
@@ -114,28 +103,10 @@ def intelligence(coords:tuple, grid:list, UsedCoords = [])->list:
         pass
     else:
         raise "Error"
-    
-def aiming(grid:list)->tuple:
+
+def aiming(grid:list)->tuple: 
     from random import randint
     return (randint(0, len(grid) -1), randint(0, len(grid[0]) - 1))
-
-def shooting_process(grid: list, aiming_coords: tuple, used_coords : list)->None:
-            res_shoot = disparo(coord_apuntada=aiming_coords, grid= grid)
-            #
-            #   ***********************************************************
-            #   * Disparo puede devolver un Array dos valores distintos   *
-            #   *         de los cuales uno puede variar                  *
-            #   *     1er elem: Grilla Actualizada. |(elemento fijo)      *
-            #   *     2do elem -> Puede variar.                           *
-            #   *                     |->primer posibilidad: Agua(False)  * 
-            #   *                     |_>Segunda posibilidad: Barco(True) *    
-            #   ***********************************************************
-            ##
-            if res_shoot is False: 
-              used_coords[0].append(aiming_coords)
-            elif res_shoot is True:
-                used_coords[1].append(aiming_coords)
-
 
 def main() -> None:
     objs = input("Cuantos objetos quiere ingresar: ")
@@ -147,23 +118,20 @@ def main() -> None:
     for _ in range(cantidad):
         
         coords = aiming(grid)
-        grid = put_in_grill_process(coords, grid)
+        grid = proc(coords, grid)
         
-    used_coords = [[], []] 
-    #               |   |_> That elem contains a correct coords.
-    #               |_> That elem containt the incorrect coords.
-
-    for attemps in range(0, 10): # Ciclo 'cerrado' en e que se gneran 11 intentos
-        aiming_coords = aiming(grid)# Obtengo coordenadas al 'azar' con el formato (y, x)
-
+    graficar(grid)
+    used_coords = [[], []]
+    for attemps in range(0, 100): 
+        aiming_coords = aiming(grid)
         if not aiming_coords in used_coords[0] and not aiming_coords in used_coords[1]:    
-            #Si las coordenadas generadas no estan usadas se dispara con las coords generadas originalmente
-            shooting_process(grid=grid, aiming_coords=aiming_coords, used_coords=used_coords)
-        else:
-            #Caso contrario se generarán otras coords
-            shooting_process(grid=grid, aiming_coords=aiming(grid), used_coords=used_coords)
+            res_shoot = disparo(coord_apuntada=aiming_coords, grid= grid)
+            if res_shoot == -1:
+                used_coords[0].append(aiming_coords)
+            elif res_shoot != -1:
+                used_coords[1].append(aiming_coords)
     print(graficar(grid))
-  
+    print(used_coords)
     
 
 main()
