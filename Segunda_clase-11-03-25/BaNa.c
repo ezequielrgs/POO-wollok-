@@ -14,7 +14,7 @@ int CreateGid(){
 
 void ToPlaceObj(grid, coord){
     //grid[y][x] = 1;
-    coord[0]
+
 }
 int GetCoords(grid){
     int* coords[2] = {1, 0};
@@ -22,7 +22,8 @@ int GetCoords(grid){
 }
 int main(){
     int grid = CreateGid();
-    coords = GetCoords(grid);
+    int *coords = GetCoords(grid);
     ToPlaceObj(grid, &coords);
+    
 }
 

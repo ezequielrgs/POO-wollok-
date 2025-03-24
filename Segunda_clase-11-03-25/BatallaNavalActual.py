@@ -1,3 +1,10 @@
+BARCOS = [
+    (1, [(0, 0)]),  # Barco de tamaño 1
+    (2, [(0, 0), (0, 1)]),  # Barco de tamaño 2 con rotación horizontal
+    (3, [(0, 0), (0, 1), (0, 2)]),  # Barco de tamaño 3 con rotación horizontal
+    (4, [(0, 0), (0, 1), (0, 2), (0, 3)])  # Barco de tamaño 4 con rotación horizontal
+]
+
 def dimensiones(x: int, y: int) -> tuple:
     return (x, y)
 
