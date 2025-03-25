@@ -150,7 +150,49 @@ def shooting_process(grid: list, aiming_coords: tuple, used_coords : list)->None
             elif res_shoot is True:
                 used_coords[1].append(aiming_coords)
 
+def breaking_the_habit(types_boats_count: dict, breaker = False)-> bool:
+    count_of_boats_downed = 0
+    for types in range(1, len(types_boats_count)):
+        if types_boats_count.get(types, None) == 0:
+            count_of_boats_downed += 1
+    if count_of_boats_downed == len(types_boats_count):
+        breaker  = True
+        return breaker
+    return breaker
 
+def get_coords_based(grid: tuple, bsed_coords: list)-> tuple:
+    from random import randint
+    boats = bsed_coords[1]
+    water = bsed_coords[0]
+
+
+    branch_of_BsedCoords = randint(0, 1)
+    match branch_of_BsedCoords:
+        case 1:
+            for boats_kicked in boats:
+                lenx = len(grid[0])
+                leny = len(grid)
+
+                ly = max(boats_kicked[0] - 1, 0)
+                lx = max(boats_kicked[1] - 1, 0)
+                by = min(boats_kicked[0] + 1, leny)
+                bx = min(boats_kicked[1] + 1, lenx)
+
+                
+            pass
+            
+    
+        case _:
+            for water_cell in water:
+                lenx = len(grid[0])
+                leny = len(grid)
+
+                ly = max(water_cell[0] - 1, 0)
+                lx = max(water_cell[1] - 1, 0)
+                by = min(water_cell[0] + 1, leny)
+                bx = min(water_cell[1] + 1, lenx)
+
+            pass
 def main() -> None:
     from random import randint
     #objs = input("Cuantos objetos quiere ingresar: ")
@@ -188,9 +230,17 @@ def main() -> None:
                 grid = new_grid
                 placed = True
 
-    #used_coords = [[], []] 
+    used_coords = [[], []] 
     #               |   |_> That elem contains a correct coords.
     #               |_> That elem containt the incorrect coords.
+
+    need_to_break = False
+    while not need_to_break:
+        if breaking_the_habit(numbers_of_types_boats):
+            break
+        else:
+            coords = (len(used_coords[0]) == 0) and (len(used_coords[1]) == 0) if aiming(grid) else get_coords_based(grid, used_coords)
+            
 
     """ for attemps in range(0, 10): # Ciclo 'cerrado' en e que se gneran 11 intentos
         aiming_coords = aiming(grid)# Obtengo coordenadas al 'azar' con el formato (y, x)

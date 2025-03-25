@@ -150,6 +150,17 @@ def shooting_process(grid: list, aiming_coords: tuple, used_coords : list)->None
             elif res_shoot is True:
                 used_coords[1].append(aiming_coords)
 
+def breaking_the_habit(breaker:bool, count_of_boats:dict) ->bool:
+    boats_downed = 0
+    all_downed = False
+    for key in range(1, len(count_of_boats)):
+        if count_of_boats.get(key, None) == 0:
+            boats_downed += 1
+
+    if boats_downed == len(count_of_boats):
+        all_downed = True
+
+    return all_downed
 
 def main() -> None:
     from random import randint
@@ -169,16 +180,6 @@ def main() -> None:
     for _ in range(len(numbers_of_types_boats)):
         key:int = randint(1, len(BARCOS))
         type_of_boat = BARCOS.get(key)
-
-        #while valid_boat:
-
-            #numbers_of_types_boats[key]-=1
-            #valid_boat = numbers_of_types_boats[key] > 0 if True else False
-            #if not valid_boat: 
-#                for types in numbers_of_types_boats:
-                    #Hay que recorrer todo el diccionario y en caso de que todo el diccionario de contadores
-                    # tenga 0 como valor en cada indice salir del while#
-
         placed = False
         while not placed:
 
@@ -188,10 +189,20 @@ def main() -> None:
                 grid = new_grid
                 placed = True
 
-    #used_coords = [[], []] 
+    used_coords = [[], []] 
     #               |   |_> That elem contains a correct coords.
     #               |_> That elem containt the incorrect coords.
 
+    need_to_break = False
+    while not need_to_break:
+
+        if (need_to_break == breaking_the_habit(need_to_break,numbers_of_types_boats)):
+            break
+
+        if len(used_coords[0]) == 0 and len(used_coords[1]) == 0:
+            pass
+
+        
     """ for attemps in range(0, 10): # Ciclo 'cerrado' en e que se gneran 11 intentos
         aiming_coords = aiming(grid)# Obtengo coordenadas al 'azar' con el formato (y, x)
 
