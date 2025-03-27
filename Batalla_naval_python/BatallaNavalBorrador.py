@@ -180,8 +180,11 @@ def get_coords_based(grid: tuple, bsed_coords: list)-> tuple:
                 bx = min(boats_kicked[1] + 1, lenx) # limit inf of x (corner inf right)
                 for y in range(ly, min(leny, by+1)):
                     for x in range(lx, min(lenx, bx+1)):
-                        if x == lx or x == min(len(lenx, bx+1)):
+                        if (x == lx and y == ly) or (x == min(len(lenx, bx+1)) and y == min(len(lenx, by+1))):
                             continue
+
+                        #if 
+
                         
                         
             
