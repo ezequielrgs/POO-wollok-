@@ -77,19 +77,24 @@ def generar_coords(grid: list) -> tuple:
 
 
 def put_in_grill_process(coords: tuple, grid: list, boat = []) -> list:
-    print("This is the values of boat \t{}".format(boat))
-    if verif_celdas(coords, grid, boat=boat):
-        return colocar_objeto(grid, coords, boat)#, c=len(boat) )
-    else:
-        return grid    
+        print("This is the values of boat \t{}".format(boat))
+
+  #  try:
+        if verif_celdas(coords, grid, boat=boat):
+            return colocar_objeto(grid, coords, boat)#, c=len(boat) )
+        else:
+            return grid    
+   # except:
 
 def are_cell_empty(aim:int)->bool:
-        return aim == 1
+        if aim == 1:
+            aim = 2 
+        return aim
 
 def disparo(coord_apuntada:tuple, grid:list)->list:
     x,y,= coord_apuntada[1], coord_apuntada[0] 
     aiming = grid[y][x]
-    is_a_boat = are_cell_empty(aiming)
+    is_a_boat = are_cell_empty(aiming) == 2 if True else False
 
     if is_a_boat:
         # 
@@ -101,13 +106,14 @@ def disparo(coord_apuntada:tuple, grid:list)->list:
     return [grid, is_a_boat] #Este otro 'return' indica que NO se acertó.(False)
 
 
-def intelligence(coords:tuple, grid:list, UsedCoords = [])->list:
+"""def intelligence(coords:tuple, grid:list, UsedCoords = [])->list:
     if not UsedCoords: 
         #
         # **Si UsedCoords no tiene coordenadas guardadas, 
         # **el programa disparará automaticamente
         # #
         UsedCoords.append(coords)
+        print("Acá en inte")
         return disparo(coord_apuntada=coords, grid=grid)
     
     if disparo(coord_apuntada=coords, grid=grid)[1]:
@@ -130,12 +136,14 @@ def intelligence(coords:tuple, grid:list, UsedCoords = [])->list:
         pass
     else:
         raise "Error"
-    
+   """ 
 def aiming(grid:list)->tuple:
     from random import randint
     return (randint(0, len(grid) -1), randint(0, len(grid[0]) - 1))
 
 def shooting_process(grid: list, aiming_coords: tuple, used_coords : list)->None:
+            
+            print(aiming_coords)
             res_shoot = disparo(coord_apuntada=aiming_coords, grid= grid)
             #
             #   ***********************************************************
@@ -144,7 +152,7 @@ def shooting_process(grid: list, aiming_coords: tuple, used_coords : list)->None
             #   *     1er elem: Grilla Actualizada. |(elemento fijo)      *
             #   *     2do elem -> Puede variar.                           *
             #   *                     |->primer posibilidad: Agua(False)  * 
-            #   *                     |_>Segunda posibilidad: Barco(True) *    
+            #   *                     |->Segunda posibilidad: Barco(True) *    
             #   ***********************************************************
             ##
             if res_shoot is False: 
@@ -238,8 +246,8 @@ def main() -> None:
             print(attemps)
             break
         else:
-
-            coords = (len(used_coords[0]) == 0) and (len(used_coords[1]) == 0) if aiming(grid) else get_coords_based(grid, used_coords)
+            coords = aiming(grid) if (len(used_coords[0]) == 0) and (len(used_coords[1]) == 0)  else get_coords_based(grid, used_coords)
+            print("De acá se envia el puto booleano de mierda{}".format(coords))
             shooting_process(grid=grid, aiming_coords=coords, used_coords=used_coords)
             
     print(graficar(grid))
