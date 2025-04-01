@@ -3,7 +3,7 @@ BARCOS = {
     1: [[(0, 0)]],  # Barco de tamaño 1
     2: [ [(0, 0), (0, 1)], [(0,0), (1,0)] ],  # Barco de tamaño 2 con rotación horizontal
     3: [[(0, 0), (0, 1), (0, 2)], [(0,0),(1,0),(2,0),(3,0)]],  # Barco de tamaño 3 con rotación horizontal
-    4:[ [(0, 0), (0, 1), (0, 2), (0, 3)], [(0, 0), (1, 0), (2, 0), (3, 0)]]  # Barco de tamaño 4 con rotación horizontal
+    4: [[(0, 0), (0, 1), (0, 2), (0, 3)], [(0, 0), (1, 0), (2, 0), (3, 0)]]  # Barco de tamaño 4 con rotación horizontal
 }
 
 def dimensiones(x: int, y: int) -> tuple:
@@ -26,17 +26,25 @@ def colocar_objeto(grilla: list, coord: list, boat=[], c=1) -> list:
         except:
             raise "Error"
     return new_grid
+def limits(boat:list, len_x:int, len_y:int)->int:
+    SupY = max(boat[0] - 1, 0) # limit of y (corner sup. left)
+    Left = max(boat[1] - 1, 0) # limit of x (corner sup. right)
+    InfY = min(boat[0] + 1, len_y) # limit inf of y (corner inf. left)
+    Right = min(boat[1] + 1, len_x) # limit inf of x (corner inf right)
+
+    return SupY, InfY, Left, Right
 
 def verif_celdas(obj_coords: tuple, grid: list, is_valid=True, boat=[]) -> bool:
                         
     lenx = len(grid[0])
     leny = len(grid)
 
-    ly = max(obj_coords[0] - 1, 0)
-    lx = max(obj_coords[1] - 1, 0)
-    by = min(obj_coords[0] + 1, leny)
-    bx = min(obj_coords[1] + 1, lenx)
-
+    lims = limits(obj_coords, lenx, leny)
+    
+    ly = lims[0]
+    by = lims[1]
+    lx = lims[2]
+    bx = lims[3]
     is_valid = True
 
     for y in range(ly, min(leny, by+1)):
@@ -77,7 +85,7 @@ def generar_coords(grid: list) -> tuple:
 
 
 def put_in_grill_process(coords: tuple, grid: list, boat = []) -> list:
-    print("This is the values of boat \t{}".format(boat))
+  #  print("This is the values of boat \t{}".format(boat))
     if verif_celdas(coords, grid, boat=boat):
         return colocar_objeto(grid, coords, boat)#, c=len(boat) )
     else:
@@ -87,7 +95,12 @@ def are_cell_empty(aim:int)->bool:
         return aim == 1
 
 def disparo(coord_apuntada:tuple, grid:list)->list:
-    x,y,= coord_apuntada[1], coord_apuntada[0] 
+    print("El NoneType en cuestion:\t{}".format(coord_apuntada))
+    try:
+        x,y,= coord_apuntada[1], coord_apuntada[0] 
+    except TypeError:
+        
+        x,y = generar_coords(grid) 
     aiming = grid[y][x]
     is_a_boat = are_cell_empty(aiming)
 
@@ -102,6 +115,7 @@ def disparo(coord_apuntada:tuple, grid:list)->list:
     
 
 def shooting_process(grid: list, aiming_coords: tuple, used_coords : list)->None:
+            print("El 'NoneType' en shooting_proc:\t{}".format(aiming_coords))
             if aiming_coords in used_coords:
                 raise ValueError
             res_shoot = disparo(coord_apuntada=aiming_coords, grid= grid)
@@ -116,9 +130,11 @@ def shooting_process(grid: list, aiming_coords: tuple, used_coords : list)->None
             #   ***********************************************************
             ##
             if res_shoot[1] is False: 
-              used_coords[0].append(aiming_coords)
+                used_coords[0].append(aiming_coords)
             elif res_shoot[1] is True:
                 used_coords[1].append(aiming_coords)
+            
+            return res_shoot, used_coords
 
 def breaking_the_habit(types_boats_count: dict, breaker = False)-> bool:
     count_of_boats_downed = 0
@@ -133,37 +149,41 @@ def breaking_the_habit(types_boats_count: dict, breaker = False)-> bool:
 def get_coords_based(grid: tuple, bsed_coords: list)-> tuple:
     boats = bsed_coords[1]
     water = bsed_coords[0]
-
+    lenx = len(grid[0])
+    leny = len(grid)
     branch_of_BsedCoords = randint(0, 1)
     match branch_of_BsedCoords:
+        
         case 1:
             for boats_kicked in boats:
-                lenx = len(grid[0])
-                leny = len(grid)
-                ly = max(boats_kicked[0] - 1, 0) # limit of y (corner sup. left)
-                lx = max(boats_kicked[1] - 1, 0) # limit of x (corner sup. right)
-                by = min(boats_kicked[0] + 1, leny) # limit inf of y (corner inf. left)
-                bx = min(boats_kicked[1] + 1, lenx) # limit inf of x (corner inf right)
-                for y in range(ly, min(leny, by+1)):
-                    for x in range(lx, min(lenx, bx+1)):
-                        if (x == lx and y == ly) or (x == min(len(lenx, bx+1)) and y == min(len(lenx, by+1))):
+                print(boats)
+                lim_sup_y, lim_inf_y, lim_left_x, lim_right_x = limits(boats_kicked, lenx, leny)
+                for y in range(lim_sup_y, lim_inf_y):
+                    for x in range(lim_left_x, lim_right_x):
+                        if (x == lim_left_x and y == lim_sup_y) or (x == lim_right_x and y == lim_inf_y):
+                            continue
+                        elif (x == lim_left_x and y == lim_inf_y) or (x == lim_right_x and y == lim_inf_y):
                             continue
                         elif grid[y][x] == 2 or (y,x) == boats_kicked:
                             continue
                         if grid[y][x] == 1:
                             return y,x
+                
+                return get_coords_based(grid, bsed_coords=bsed_coords.pop(0))
                         
         case _:
             for water_cell in water:
-                lenx = len(grid[0])
-                leny = len(grid)
-
-                ly = max(water_cell[0] - 1, 0)
-                lx = max(water_cell[1] - 1, 0)
-                by = min(water_cell[0] + 1, leny)
-                bx = min(water_cell[1] + 1, lenx)
-
-            pass
+                print(water_cell)
+                lim_sup_y, lim_inf_y, lim_left_x, lim_right_x = limits(water_cell, lenx, leny)  
+                for y in range(lim_sup_y, lim_inf_y):
+                    for x in range(lim_left_x, lim_right_x):
+                        if (y,x)==water_cell:
+                            continue
+                        else:
+                            if grid[y][x] == 1:
+                                return y,x
+            return generar_coords(grid)
+            
 def main() -> None:
     #objs = input("Cuantos objetos quiere ingresar: ")
    # cantidad = cantidad_objetos(c=int(objs))
@@ -193,19 +213,22 @@ def main() -> None:
     used_coords = [[], []] 
     #               |   |_> That elem contains a correct coords.
     #               |_> That elem containt the incorrect coords.
+    
     attemps = 0
     need_to_break = False
     while not need_to_break:
         attemps+=1
         if breaking_the_habit(numbers_of_types_boats):
-            print(attemps)
+            print("Num of attemps:\t",attemps)
             break
         else:
             coords =  generar_coords(grid) if (len(used_coords[0]) == 0) and (len(used_coords[1]) == 0) else get_coords_based(grid, used_coords)
             try:
+                print("generó error en el try")
                 shooting_process(grid=grid, aiming_coords=coords, used_coords=used_coords)
-            except ValueError:
-                shooting_process(grid, get_coords_based(grid, used_coords), used_coords)
+            except:
+                print("generó error la excepcion")
+                shooting_process(grid, get_coords_based(grid, [used_coords[i] for i in range(0, len(used_coords))]), used_coords)
                 
     print(graficar(grid))
 
