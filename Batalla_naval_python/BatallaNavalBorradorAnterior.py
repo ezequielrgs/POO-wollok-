@@ -26,7 +26,7 @@ def colocar_objeto(grilla: list, coord: list, boat=[], c=1) -> list:
         except:
             raise "Error"
     return new_grid
-def limits(boat:list, len_x:int, len_y:int)->int:
+def limits(boat:tuple, len_x:int, len_y:int)->int:
     SupY = max(boat[0] - 1, 0) # limit of y (corner sup. left)
     Left = max(boat[1] - 1, 0) # limit of x (corner sup. right)
     InfY = min(boat[0] + 1, len_y) # limit inf of y (corner inf. left)
@@ -36,8 +36,8 @@ def limits(boat:list, len_x:int, len_y:int)->int:
 
 def verif_celdas(obj_coords: tuple, grid: list, is_valid=True, boat=[]) -> bool:
                         
-    lenx = len(grid[0])
-    leny = len(grid)
+    lenx = len(grid[0])-1
+    leny = len(grid)-1
 
     lims = limits(obj_coords, lenx, leny)
     
@@ -147,10 +147,11 @@ def breaking_the_habit(types_boats_count: dict, breaker = False)-> bool:
     return breaker
 
 def get_coords_based(grid: tuple, bsed_coords: list)-> tuple:
+    print(bsed_coords)
     boats = bsed_coords[1]
     water = bsed_coords[0]
-    lenx = len(grid[0])
-    leny = len(grid)
+    lenx = len(grid[0])-1
+    leny = len(grid)-1
     branch_of_BsedCoords = randint(0, 1)
     match branch_of_BsedCoords:
         
@@ -226,10 +227,16 @@ def main() -> None:
             try:
                 print("generó error en el try")
                 shooting_process(grid=grid, aiming_coords=coords, used_coords=used_coords)
+                for state in used_coords:
+                    for i in range(len(state)):
+                        if state[i] is None:
+                            print("Se encontro un None.")
+                            state.pop(i)
+                graficar(new_grid)               
             except:
                 print("generó error la excepcion")
                 shooting_process(grid, get_coords_based(grid, [used_coords[i] for i in range(0, len(used_coords))]), used_coords)
                 
-    print(graficar(grid))
+    
 
 main()
