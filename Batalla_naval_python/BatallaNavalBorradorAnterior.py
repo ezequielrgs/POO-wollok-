@@ -27,6 +27,7 @@ def colocar_objeto(grilla: list, coord: list, boat=[], c=1) -> list:
             raise "Error"
     return new_grid
 def limits(boat:tuple, len_x:int, len_y:int)->int:
+    print("A limits llega:\t",boat)
     SupY = max(boat[0] - 1, 0) # limit of y (corner sup. left)
     Left = max(boat[1] - 1, 0) # limit of x (corner sup. right)
     InfY = min(boat[0] + 1, len_y) # limit inf of y (corner inf. left)
@@ -147,7 +148,8 @@ def breaking_the_habit(types_boats_count: dict, breaker = False)-> bool:
     return breaker
 
 def get_coords_based(grid: tuple, bsed_coords: list)-> tuple:
-    print(bsed_coords)
+   # print(bsed_coords)
+    print("The father var of water:", bsed_coords)
     boats = bsed_coords[1]
     water = bsed_coords[0]
     lenx = len(grid[0])-1
@@ -157,7 +159,7 @@ def get_coords_based(grid: tuple, bsed_coords: list)-> tuple:
         
         case 1:
             for boats_kicked in boats:
-                print(boats)
+
                 lim_sup_y, lim_inf_y, lim_left_x, lim_right_x = limits(boats_kicked, lenx, leny)
                 for y in range(lim_sup_y, lim_inf_y):
                     for x in range(lim_left_x, lim_right_x):
@@ -169,12 +171,12 @@ def get_coords_based(grid: tuple, bsed_coords: list)-> tuple:
                             continue
                         if grid[y][x] == 1:
                             return y,x
-                
-                return get_coords_based(grid, bsed_coords=bsed_coords.pop(0))
+                bsed_coords[1].pop(0)
+                return get_coords_based(grid, bsed_coords)
                         
         case _:
+            print("This is water", water)
             for water_cell in water:
-                print(water_cell)
                 lim_sup_y, lim_inf_y, lim_left_x, lim_right_x = limits(water_cell, lenx, leny)  
                 for y in range(lim_sup_y, lim_inf_y):
                     for x in range(lim_left_x, lim_right_x):
@@ -186,8 +188,6 @@ def get_coords_based(grid: tuple, bsed_coords: list)-> tuple:
             return generar_coords(grid)
             
 def main() -> None:
-    #objs = input("Cuantos objetos quiere ingresar: ")
-   # cantidad = cantidad_objetos(c=int(objs))
     ix = input("X = ")
     iy = input("Y = ")
     grid = grilla(dimensiones=dimensiones(int(iy), int(ix)))
@@ -219,10 +219,18 @@ def main() -> None:
     need_to_break = False
     while not need_to_break:
         attemps+=1
+        print("Numb of attemps: ", attemps)
         if breaking_the_habit(numbers_of_types_boats):
             print("Num of attemps:\t",attemps)
             break
         else:
+            print("+++++++++++++++++++++++++++++++++++++++++++++++++++++++")
+            print("|    Así está el diccionario con los barcos tirados:  |")
+            print("|        -El barco de una coord:{}                    |".format(numbers_of_types_boats[1]))
+            print("|        -El barco de dos coord:{}                    |".format(numbers_of_types_boats[2]))
+            print("|        -El barco de tres coord:{}                   |".format(numbers_of_types_boats[3]))
+            print("|        -El barco de cuatro coord:{}                 |".format(numbers_of_types_boats[4]))
+            print("+++++++++++++++++++++++++++++++++++++++++++++++++++++++")
             coords =  generar_coords(grid) if (len(used_coords[0]) == 0) and (len(used_coords[1]) == 0) else get_coords_based(grid, used_coords)
             try:
                 print("generó error en el try")
@@ -230,7 +238,7 @@ def main() -> None:
                 for state in used_coords:
                     for i in range(len(state)):
                         if state[i] is None:
-                            print("Se encontro un None.")
+                           # print("Se encontro un None.")
                             state.pop(i)
                 graficar(new_grid)               
             except:
