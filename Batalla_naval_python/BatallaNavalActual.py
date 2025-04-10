@@ -217,33 +217,34 @@ def main() -> None:
     
     attemps = 0
     need_to_break = False
-    while not need_to_break:
-        attemps+=1
-        print("Numb of attemps: ", attemps)
-        if breaking_the_habit(numbers_of_types_boats):
-            print("Num of attemps:\t",attemps)
-            break
-        else:
-            print("+++++++++++++++++++++++++++++++++++++++++++++++++++++++")
-            print("|    Así está el diccionario con los barcos tirados:  |")
-            print("|        -El barco de una coord:{}                    |".format(numbers_of_types_boats[1]))
-            print("|        -El barco de dos coord:{}                    |".format(numbers_of_types_boats[2]))
-            print("|        -El barco de tres coord:{}                   |".format(numbers_of_types_boats[3]))
-            print("|        -El barco de cuatro coord:{}                 |".format(numbers_of_types_boats[4]))
-            print("+++++++++++++++++++++++++++++++++++++++++++++++++++++++")
-            coords =  generar_coords(grid) if (len(used_coords[0]) == 0) and (len(used_coords[1]) == 0) else get_coords_based(grid, used_coords)
-            try:
-                print("generó error en el try")
-                shooting_process(grid=grid, aiming_coords=coords, used_coords=used_coords)
-                for state in used_coords:
-                    for i in range(len(state)):
-                        if state[i] is None:
-                           # print("Se encontro un None.")
-                            state.pop(i)
-                graficar(new_grid)               
-            except:
-                print("generó error la excepcion")
-                shooting_process(grid, get_coords_based(grid, [used_coords[i] for i in range(0, len(used_coords))]), used_coords)
+    try:
+        while not need_to_break:
+            attemps+=1
+            if breaking_the_habit(numbers_of_types_boats):
+                print("Num of attemps:\t",attemps)
+                break
+            else:
+                print("+++++++++++++++++++++++++++++++++++++++++++++++++++++++")
+                print("|    Así está el diccionario con los barcos tirados:  |")
+                print("|        -El barco de una coord:{}                    |".format(numbers_of_types_boats[1]))
+                print("|        -El barco de dos coord:{}                    |".format(numbers_of_types_boats[2]))
+                print("|        -El barco de tres coord:{}                   |".format(numbers_of_types_boats[3]))
+                print("|        -El barco de cuatro coord:{}                 |".format(numbers_of_types_boats[4]))
+                print("+++++++++++++++++++++++++++++++++++++++++++++++++++++++")
+                coords =  generar_coords(grid) if (len(used_coords[0]) == 0) and (len(used_coords[1]) == 0) else get_coords_based(grid, used_coords)
+                try:
+                    shooting_process(grid=grid, aiming_coords=coords, used_coords=used_coords)
+                    for state in used_coords:
+                        for i in range(len(state)):
+                            if state[i] is None:
+                            # print("Se encontro un None.")
+                                state.pop(i)
+                    graficar(new_grid)               
+                
+                except:
+                    shooting_process(grid, get_coords_based(grid, [used_coords[i] for i in range(0, len(used_coords))]), used_coords)
+    except KeyboardInterrupt:
+        print("the total of attemps is:\t", attemps)
                 
     
 
